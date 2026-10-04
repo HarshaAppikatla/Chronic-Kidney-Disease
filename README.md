@@ -11,7 +11,7 @@
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/HarshaAppikatla/Chronic-Kidney-Disease/blob/main/SPM_RESEARCH_7.ipynb)
 
 <p align="center">
-  <b>Official Replication Package & Reviewer Audit Suite</b><br>
+  <b>Official Replication Package & Reviewer Audit Suite (Paper ID 183)</b><br>
   Rigorous Cross-Validation • Data Leakage Audit • Explainable AI (SHAP) • Clinical Decision Curve Analysis • External Validation
 </p>
 
@@ -32,8 +32,6 @@
 
 > **Dozens of published papers report 98%–100% accuracy predicting Chronic Kidney Disease (CKD) on the UCI benchmark, claiming complex hybrid neural networks are required. Are these models genuinely superior, or are they riding on statistical artifacts and data leakage?**
 
-This repository provides the complete, transparent code and data to answer this question. We conducted an end-to-end audit resolving four central inquiries:
-
 ```mermaid
 flowchart TD
     A["🔬 <b>Stage 1: Architecture Equivalence Audit</b><br/>Evaluated 7 ML models across 50 CV folds (5×10 CV) to test whether complex hybrids outperform simpler baselines."]
@@ -45,6 +43,17 @@ flowchart TD
     B --> C
     C --> D
 ```
+
+---
+
+## ⚖️ Literature Claims vs. Empirical Reality
+
+| Common Literature Claim | What Our Audit Revealed | Methodological Reason |
+| :--- | :--- | :--- |
+| **"Novel Deep/Hybrid ANN Stacks are Superior"** | **Models are statistically equivalent ($p > 0.05$)** | Standard tests ignore dependent holdout variance. Under Nadeau-Bengio corrected tests, Logistic Regression ($97.95\%$) matches Hybrid ANN+XGB ($98.90\%$). |
+| **"Missing Data Mean-Imputation is Harmless"** | **Missingness carries massive label leakage** | Missingness is MNAR (label-correlated). A model trained *strictly on missingness indicators* achieves **$80.9\%$ accuracy (AUC $0.850$)**. |
+| **"Near-100% Accuracy is Solely an Imputation Artifact"** | **Real physiological signal remains intact** | Moving imputation strictly inside folds yields **$98.85\%$ accuracy**, proving core kidney biomarkers remain powerfully predictive. |
+| **"Models Tested Only on UCI-400 Will Collapse Externally"** | **Strong generalization on independent cohort** | On external cohort UCI #857 ($n=200$, Dhaka, Bangladesh), the model achieved **$98.00\%$ accuracy with 0 missed CKD cases**. |
 
 ---
 
@@ -114,14 +123,36 @@ Performance across 50 evaluations (5-fold Stratified CV $\times$ 10 Repeats):
 
 ---
 
+## 🩺 Clinical Feature Glossary
+
+The 13 clinical biomarkers utilized in the benchmark dataset (`new_model.csv`):
+
+| Feature Name | Clinical Description | Measurement / Units | Normal Clinical Reference | Pathophysiological Role in CKD |
+| :--- | :--- | :--- | :--- | :--- |
+| **`Hemo`** | Hemoglobin | g/dL | 13.5–17.5 (M), 12.0–15.5 (F) | Kidneys produce erythropoietin; damage causes severe normocytic anemia. |
+| **`Sg`** | Urine Specific Gravity | Ratio | 1.010–1.025 | Loss of renal tubular concentrating capacity leads to fixed low specific gravity. |
+| **`Al`** | Urine Albumin | Categorical (0–5) | 0 (Negative) | Glomerular podocyte effacement causes high albumin filtration into urine. |
+| **`Sc`** | Serum Creatinine | mg/dL | 0.7–1.3 | Direct biomarker of declining glomerular filtration rate (GFR). |
+| **`Bu`** | Blood Urea | mg/dL | 15–45 | Uremic retention resulting from impaired nitrogenous waste clearance. |
+| **`Rbcc`** | Red Blood Cell Count | $\text{millions/mm}^3$ | 4.5–5.9 | Depressed secondary to erythropoietin deficiency. |
+| **`Wbcc`** | White Blood Cell Count | $\text{cells/mm}^3$ | 4,000–11,000 | Marker of systemic uremic inflammation and immune dysregulation. |
+| **`Sod`** | Serum Sodium | mEq/L | 135–145 | Dysregulated sodium retention and tubular handling in chronic kidney injury. |
+| **`Pot`** | Serum Potassium | mEq/L | 3.5–5.0 | Reduced nephron mass leads to dangerous hyperkalemia. |
+| **`Su`** | Urine Sugar | Categorical (0–5) | 0 (Negative) | Marker of diabetic nephropathy (leading etiology of end-stage renal disease). |
+| **`Bp`** | Blood Pressure | mmHg | 120/80 | Glomerular hypertension accelerates renal microvascular arteriosclerosis. |
+| **`Rbc`** | Red Blood Cells in Urine | Binary (0/1) | Normal (0) | Microscopic hematuria indicating active glomerular basement membrane breach. |
+| **`Htn`** | Hypertension Status | Binary (0/1) | No (0) | Primary comorbidity and driver of chronic kidney damage. |
+
+---
+
 ## 🔬 Clinical Explainability & Utility
 
 ### 1. What Drives Predictions? (SHAP Analysis)
 TreeExplainer reveals that **four key renal biomarkers account for $>82\%$ of the total diagnostic decision**:
-- **Hemoglobin (`Hemo`)** – $30.2\%$ contribution (anemia is a hallmark of decreased erythropoietin production in CKD)
-- **Specific Gravity (`Sg`)** – $20.2\%$ contribution (reflects loss of urinary concentrating capacity)
-- **Albumin (`Al`)** – $16.2\%$ contribution (proteinuria indicates glomerular filtration barrier injury)
-- **Serum Creatinine (`Sc`)** – $15.9\%$ contribution (direct index of impaired glomerular filtration)
+- **Hemoglobin (`Hemo`)** – $30.2\%$ contribution
+- **Specific Gravity (`Sg`)** – $20.2\%$ contribution
+- **Albumin (`Al`)** – $16.2\%$ contribution
+- **Serum Creatinine (`Sc`)** – $15.9\%$ contribution
 
 <p align="center">
   <img src="figures/shap_beeswarm.png" alt="SHAP Beeswarm Distribution" width="750">
@@ -150,6 +181,20 @@ A model shouldn't just be accurate; its confidence must be trustworthy. We evalu
   <br>
   <em>Probability calibration curves across all models. XGBoost and SVM-RBF demonstrate the tightest alignment along the ideal $45^\circ$ calibration diagonal.</em>
 </p>
+
+---
+
+## 📋 Peer-Review Traceability Matrix (Paper ID 183)
+
+This replication suite directly addresses every point raised during review:
+
+| Reviewer / Query | Specific Reviewer Comment | How It Is Addressed in Code | Artifact / Output Location |
+| :---: | :--- | :--- | :--- |
+| **Reviewer 1** | *"Preprocessing (imputation/scaling) must occur strictly inside folds to prevent leakage."* | Fully enclosed `Pipeline` performing median imputation and standard scaling solely on training folds. | Notebook Cell 27; `per_fold_accuracy.csv` |
+| **Reviewer 2** | *"Audit against original ground-truth missingness and report exact Wilson CIs."* | Restored true NaNs from UCI raw dataset; evaluated missingness-only model; calculated exact 95% Wilson intervals. | Cells 26, 39; `true_missingness_mask.csv`, `table1.csv` |
+| **Reviewer 2** | *"Demonstrate external validity on an independent cohort."* | Evaluated without retraining on UCI #857 ($n=200$, Dhaka, Bangladesh cohort) with bin-to-continuous schema mapping. | Cells 28–37; `external_uci857_aligned.csv` |
+| **Reviewer 3** | *"Include published baseline architectures and report imbalance-robust metrics."* | Added class-weighted models, balanced accuracy, Matthews Correlation Coefficient (MCC), and AUPRC. | Cells 15–16, 43; `table_all_metrics.csv` |
+| **Reviewer 3** | *"Include formal calibration curves and clinical Decision Curve Analysis (DCA)."* | Computed ECE, Brier score, Spiegelhalter $z$-test, and decision curves across clinical threshold probabilities ($p_t$). | Cells 44, 59–60; `reliability_plots.png`, `decision_curve_v2.png` |
 
 ---
 
@@ -217,6 +262,18 @@ pip install -r requirements.txt
 # 4. Launch Jupyter Lab or Notebook
 jupyter lab SPM_RESEARCH_7.ipynb
 ```
+*Total execution time is approximately 45–60 minutes on a standard CPU.*
+
+---
+
+## 🏛️ Dataset Provenance & Attribution
+
+1. **Training Benchmark (UCI CKD #336)**:
+   - Collected from Apollo Hospitals, Tamil Nadu, India ($n=400$, 24 features).
+   - Distributed via the [UCI Machine Learning Repository (Dataset ID: 336)](https://archive.ics.uci.edu/dataset/336/chronic_kidney_disease).
+2. **External Validation Cohort (UCI #857)**:
+   - Collected from tertiary care hospitals in Dhaka, Bangladesh ($n=200$, 28 features).
+   - Distributed via the [UCI Machine Learning Repository (Dataset ID: 857)](https://archive.ics.uci.edu/dataset/857/chronic_kidney_disease) under the **Creative Commons Attribution 4.0 International (CC BY 4.0)** license.
 
 ---
 
