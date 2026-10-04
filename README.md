@@ -1,12 +1,13 @@
-# Statistical Audit and Rigorous Benchmark of Machine Learning Models for Chronic Kidney Disease (CKD) Prediction
+# How Much of Reported Chronic Kidney Disease Prediction Accuracy Is Real?
+### A Statistical Audit, Leakage Analysis, and External Validation of Hybrid Stacking on the UCI Benchmark
 
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/)
 [![Framework: Scikit-Learn & XGBoost](https://img.shields.io/badge/Framework-Scikit--Learn%20%7C%20XGBoost%20%7C%20TensorFlow-orange.svg)](https://scikit-learn.org/)
 
-This repository contains the complete replication package, benchmarks, datasets, statistical significance tests, and out-of-fold predictions for **Paper ID 183**:  
-> **"A Critical Statistical Audit of Machine Learning for Chronic Kidney Disease: Architecture Equivalence, Informative Missingness, and External Generalizability."**
+This repository contains the complete official replication package, benchmark suite, datasets, statistical significance tests, and out-of-fold predictions for **Paper ID 183**:  
+> **"How Much of Reported Chronic Kidney Disease Prediction Accuracy Is Real? A Statistical Audit, Leakage Analysis, and External Validation of Hybrid Stacking on the UCI Benchmark"**
 
 ---
 
@@ -164,10 +165,10 @@ This project is licensed under the [MIT License](LICENSE).
 
 If you use this benchmark, methodology, or audit code in your research, please cite:
 ```bibtex
-@article{ckd_audit_2026,
-  title={A Critical Statistical Audit of Machine Learning for Chronic Kidney Disease: Architecture Equivalence, Informative Missingness, and External Generalizability},
-  author={Appikatla, Harsha et al.},
-  journal={Research Review (Paper ID 183)},
+@article{ckd_audit_paper183,
+  title={How Much of Reported Chronic Kidney Disease Prediction Accuracy Is Real? A Statistical Audit, Leakage Analysis, and External Validation of Hybrid Stacking on the UCI Benchmark},
+  author={Appikatla, Harsha and Contributors},
+  journal={Paper ID 183 Revision Replication Package},
   year={2026}
 }
 ```
