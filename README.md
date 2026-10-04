@@ -34,15 +34,22 @@
 
 ```mermaid
 flowchart TD
-    A["🔬 <b>Stage 1: Architecture Equivalence Audit</b><br/>Evaluated 7 ML models across 50 CV folds (5×10 CV) to test whether complex hybrids outperform simpler baselines."]
-    B["🕵️ <b>Stage 2: Informative Missingness Audit</b><br/>Audited benchmark mean-imputation artifacts to verify if missingness alone acts as a diagnostic shortcut."]
-    C["🛡️ <b>Stage 3: Strict In-Fold Preprocessing Control</b><br/>Restored ground-truth NaNs inside cross-validation folds to isolate pure, leak-free physiological predictive signal."]
-    D["🌍 <b>Stage 4: Independent External Validation</b><br/>Evaluated generalizability on an unseen external hospital cohort from Dhaka, Bangladesh (UCI #857, n=200)."]
+    A["🔬 <b>Stage 1: Architecture Audit</b><br/>Are complex hybrids truly superior<br/>to simpler linear baselines?"]
+    B["🕵️ <b>Stage 2: Missingness Audit</b><br/>Is missing data acting as an<br/>unintended diagnostic shortcut?"]
+    C["🛡️ <b>Stage 3: In-Fold Control</b><br/>Does genuine physiological signal<br/>survive leak-free preprocessing?"]
+    D["🌍 <b>Stage 4: External Validation</b><br/>Does the model generalize to<br/>an independent hospital cohort?"]
 
     A --> B
     B --> C
     C --> D
 ```
+
+| Stage | Investigation | Key Question & What Was Discovered |
+| :---: | :--- | :--- |
+| 🔬 | **Stage 1: Architecture Equivalence** | **Are complex models superior?** <br>❌ No. Evaluated 7 models across 50 folds; **$0 / 21$ pairs were statistically significant** ($p > 0.05$). Simple Logistic Regression ($97.95\%$) matches complex hybrids ($98.90\%$). |
+| 🕵️ | **Stage 2: Informative Missingness** | **Is missing data a diagnostic cheat code?** <br>⚠️ Yes. A model trained *solely on missingness indicators* (zero clinical values) achieved **$80.9\%$ accuracy (AUC $0.850$)**. |
+| 🛡️ | **Stage 3: In-Fold Preprocessing Control** | **Does genuine clinical predictive power remain?** <br>✅ Yes. When all preprocessing is kept strictly inside folds, the model achieves **$98.85\%$ accuracy** ($p = 0.70$ vs pre-imputed). |
+| 🌍 | **Stage 4: External Cohort Validation** | **Does it generalize to independent hospital patients?** <br>✅ Yes. Tested on an external cohort from Dhaka, Bangladesh ($n=200$): **$98.00\%$ accuracy with $0$ missed CKD cases**. |
 
 ---
 
