@@ -1,0 +1,16 @@
+Stratum,Model,Patients,CKD prevalence %,Accuracy % [95% CI],Sens %,Spec %
+0 missing (complete),LogReg,169,30.2,"100.0 [97.8, 100.0]",100.0,100.0
+0 missing (complete),RandomForest,169,30.2,"100.0 [97.8, 100.0]",100.0,100.0
+0 missing (complete),XGBoost,169,30.2,"100.0 [97.8, 100.0]",100.0,100.0
+0 missing (complete),Hybrid_ANN_XGB,169,30.2,"100.0 [97.8, 100.0]",100.0,100.0
+0 missing (complete),SoftVote_LR_RF_SVM_XGB,169,30.2,"100.0 [97.8, 100.0]",100.0,100.0
+1-2 missing,LogReg,83,74.7,"98.1 [91.6, 99.7]",97.4,100.0
+1-2 missing,RandomForest,83,74.7,"100.0 [95.7, 100.0]",100.0,100.0
+1-2 missing,XGBoost,83,74.7,"99.8 [95.7, 100.0]",99.8,99.5
+1-2 missing,Hybrid_ANN_XGB,83,74.7,"99.2 [93.5, 100.0]",98.9,100.0
+1-2 missing,SoftVote_LR_RF_SVM_XGB,83,74.7,"100.0 [95.7, 100.0]",100.0,100.0
+>=3 missing,LogReg,148,92.6,"95.5 [90.5, 98.1]",96.7,80.9
+>=3 missing,RandomForest,148,92.6,"96.6 [92.3, 98.9]",98.8,69.1
+>=3 missing,XGBoost,148,92.6,"96.4 [92.3, 98.9]",98.0,76.4
+>=3 missing,Hybrid_ANN_XGB,148,92.6,"97.5 [93.2, 99.3]",99.0,79.1
+>=3 missing,SoftVote_LR_RF_SVM_XGB,148,92.6,"98.1 [94.2, 99.6]",99.7,78.2

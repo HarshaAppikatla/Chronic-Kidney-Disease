@@ -1,0 +1,7 @@
+Feature set,# feat,Model,In-dataset CV acc %,External acc % [95% CI],External AUC,Sens %,Spec %,FN,FP
+All 12 features (reference),12,XGBoost,98.75,"98.0 [95.0, 99.5]",0.9985,100.0,94.4,0,4
+All 12 features (reference),12,LogReg,98.22,"98.5 [95.7, 99.7]",0.9995,99.2,97.2,1,2
+Drop rule-flagged collapsed features,9,XGBoost,99.12,"99.0 [96.4, 99.9]",0.9993,100.0,97.2,0,2
+Drop rule-flagged collapsed features,9,LogReg,98.12,"99.0 [96.4, 99.9]",0.9994,99.2,98.6,1,1
+"Drop Sc, Pot, Bu, Al, Su (also ordinal ranks)",7,XGBoost,98.7,"99.0 [96.4, 99.9]",0.9983,100.0,97.2,0,2
+"Drop Sc, Pot, Bu, Al, Su (also ordinal ranks)",7,LogReg,97.82,"98.5 [95.7, 99.7]",0.9988,99.2,97.2,1,2
