@@ -35,15 +35,15 @@
 This repository provides the complete, transparent code and data to answer this question. We conducted an end-to-end audit resolving four central inquiries:
 
 ```mermaid
-flowchart LR
-    A["<b>1. Model Zoo</b><br/>Does architecture choice matter?"] --> B["<b>2. Leakage Audit</b><br/>Is missingness a cheat code?"]
-    B --> C["<b>3. In-Fold Control</b><br/>Does real clinical signal remain?"]
-    C --> D["<b>4. External Cohort</b><br/>Does it generalize to new patients?"]
+flowchart TD
+    A["🔬 <b>Stage 1: Architecture Equivalence Audit</b><br/>Evaluated 7 ML models across 50 CV folds (5×10 CV) to test whether complex hybrids outperform simpler baselines."]
+    B["🕵️ <b>Stage 2: Informative Missingness Audit</b><br/>Audited benchmark mean-imputation artifacts to verify if missingness alone acts as a diagnostic shortcut."]
+    C["🛡️ <b>Stage 3: Strict In-Fold Preprocessing Control</b><br/>Restored ground-truth NaNs inside cross-validation folds to isolate pure, leak-free physiological predictive signal."]
+    D["🌍 <b>Stage 4: Independent External Validation</b><br/>Evaluated generalizability on an unseen external hospital cohort from Dhaka, Bangladesh (UCI #857, n=200)."]
 
-    style A fill:#e1f5fe,stroke:#0288d1,stroke-width:2px;
-    style B fill:#fff3e0,stroke:#f57c00,stroke-width:2px;
-    style C fill:#e8f5e9,stroke:#388e3c,stroke-width:2px;
-    style D fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px;
+    A --> B
+    B --> C
+    C --> D
 ```
 
 ---
