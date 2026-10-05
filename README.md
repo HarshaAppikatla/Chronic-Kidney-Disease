@@ -3,205 +3,227 @@
 # 🩺 How Much of Reported Chronic Kidney Disease Prediction Accuracy Is Real?
 ### A Statistical Audit, Leakage Analysis, and External Validation of Hybrid Stacking on the UCI Benchmark
 
-[![Paper ID: 183](https://img.shields.io/badge/Paper%20ID-183-red.svg)](https://github.com/HarshaAppikatla/Chronic-Kidney-Disease)
-[![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-3776AB.svg?logo=python&logoColor=white)](https://www.python.org/)
+[![Status](https://img.shields.io/badge/Status-Under%20revision-orange.svg)](https://github.com/HarshaAppikatla/Chronic-Kidney-Disease)
+[![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB.svg?logo=python&logoColor=white)](https://www.python.org/)
 [![Scikit-Learn](https://img.shields.io/badge/Scikit--Learn-F7931E.svg?logo=scikit-learn&logoColor=white)](https://scikit-learn.org/)
 [![XGBoost](https://img.shields.io/badge/XGBoost-11B384.svg)](https://xgboost.readthedocs.io/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![TensorFlow](https://img.shields.io/badge/TensorFlow-FF6F00.svg?logo=tensorflow&logoColor=white)](https://www.tensorflow.org/)
+[![License: MIT](https://img.shields.io/badge/Code%20licence-MIT-yellow.svg)](LICENSE)
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/HarshaAppikatla/Chronic-Kidney-Disease/blob/main/SPM_RESEARCH_7.ipynb)
 
 <p align="center">
-  <b>Official Replication Package & Reviewer Audit Suite (Paper ID 183)</b><br>
-  Rigorous Cross-Validation • Data Leakage Audit • Explainable AI (SHAP) • Clinical Decision Curve Analysis • External Validation
+  <b>Reproducibility package • ICMLDE 2026 (Procedia Computer Science)</b><br>
+  Corrected Repeated CV • Missing-Data Audit • External Validation • Calibration • SHAP • Decision Curve Analysis
 </p>
 
 ---
 
-### ⚡ Audit At a Glance
+### ⚡ Audit at a Glance
 
-| ⚖️ Architecture Equivalence | 🕵️ Informative Missingness | 🛡️ In-Fold Robustness | 🌍 External Validation |
+| ⚖️ Model Differences | 🕵️ Informative Missingness | 🛡️ In-Fold Imputation | 🌍 External Cohort |
 | :---: | :---: | :---: | :---: |
-| **0 / 21 Significant Pairs** | **80.9% Accuracy** | **98.85% Accuracy** | **98.00% Accuracy** |
-| Complex ensembles perform on par with basic Logistic Regression ($p > 0.05$) | A model using *only missingness flags* (0 clinical values) predicts CKD | In-fold imputation retains high accuracy ($p=0.70$ vs pre-imputed) | Validated on independent Bangladeshi cohort ($n=200$, 0 missed cases) |
-
----
+| **0 / 21** | **80.9%** | **98.85%** | **98.0%** |
+| accuracy comparisons significant among 7 models | accuracy from missingness flags alone (AUC 0.850) | XGBoost accuracy, in-fold imputation (*p* = 0.70 vs pre-imputed) | accuracy on 200 independent patients (95% CI 95.0–99.5) |
 
 </div>
 
+> ⚠️ **Research use only.** Results come from two small, retrospective hospital datasets. They do not establish clinical generalizability and must not be used for clinical decisions.
+
+---
+
 ## 💡 The Core Question
 
-> **Dozens of published papers report 98%–100% accuracy predicting Chronic Kidney Disease (CKD) on the UCI benchmark, claiming complex hybrid neural networks are required. Are these models genuinely superior, or are they riding on statistical artifacts and data leakage?**
+> **Many papers report 95–100% accuracy on the 400-record UCI chronic kidney disease (CKD) benchmark, almost always from a single 320/80 split. At this sample size a single split carries a confidence interval several points wide. Are the reported differences between models, and the near-ceiling accuracy itself, real?**
 
 ```mermaid
 flowchart TD
-    A["🔬 <b>Stage 1: Architecture Audit</b><br/>Are complex hybrids truly superior<br/>to simpler linear baselines?"]
-    B["🕵️ <b>Stage 2: Missingness Audit</b><br/>Is missing data acting as an<br/>unintended diagnostic shortcut?"]
-    C["🛡️ <b>Stage 3: In-Fold Control</b><br/>Does genuine physiological signal<br/>survive leak-free preprocessing?"]
-    D["🌍 <b>Stage 4: External Validation</b><br/>Does the model generalize to<br/>an independent hospital cohort?"]
-
-    A --> B
-    B --> C
-    C --> D
+    A["🔬 <b>Stage 1: Statistical audit</b><br/>Are differences between<br/>models real?"]
+    B["🕵️ <b>Stage 2: Missingness audit</b><br/>Does missing data carry<br/>label information?"]
+    C["🌍 <b>Stage 3: External validation</b><br/>Does accuracy hold on<br/>another cohort?"]
+    D["📈 <b>Stage 4: Calibration, SHAP, DCA</b><br/>Are probabilities and<br/>explanations trustworthy?"]
+    A --> B --> C --> D
 ```
 
-| Stage | Investigation | Key Question & What Was Discovered |
+| Stage | Investigation | What we found |
 | :---: | :--- | :--- |
-| 🔬 | **Stage 1: Architecture Equivalence** | **Are complex models superior?** <br>❌ No. Evaluated 7 models across 50 folds; **$0 / 21$ pairs were statistically significant** ($p > 0.05$). Simple Logistic Regression ($97.95\%$) matches complex hybrids ($98.90\%$). |
-| 🕵️ | **Stage 2: Informative Missingness** | **Is missing data a diagnostic cheat code?** <br>⚠️ Yes. A model trained *solely on missingness indicators* (zero clinical values) achieved **$80.9\%$ accuracy (AUC $0.850$)**. |
-| 🛡️ | **Stage 3: In-Fold Preprocessing Control** | **Does genuine clinical predictive power remain?** <br>✅ Yes. When all preprocessing is kept strictly inside folds, the model achieves **$98.85\%$ accuracy** ($p = 0.70$ vs pre-imputed). |
-| 🌍 | **Stage 4: External Cohort Validation** | **Does it generalize to independent hospital patients?** <br>✅ Yes. Tested on an external cohort from Dhaka, Bangladesh ($n=200$): **$98.00\%$ accuracy with $0$ missed CKD cases**. |
+| 🔬 | **Statistical audit** | **0 of 21** pairwise accuracy differences among 7 models are significant (Nadeau–Bengio corrected, Holm adjusted, 50 paired folds). Among 17 models only naive Bayes is significantly worse. Only the decision tree has credibly lower AUC. |
+| 🕵️ | **Missingness audit** | **231 of 400 patients (57.8%)** have at least one imputed cell; 9 of 13 columns have label-associated missingness. Flags alone predict CKD with **80.9% accuracy**. |
+| 🌍 | **External validation** | 98.0% accuracy, sensitivity 100% (97.2–100), specificity 94.4% (86.4–98.5) on one small, single-site, retrospective cohort. |
+| 📈 | **Calibration, SHAP, DCA** | XGBoost is best calibrated; stacks are not better calibrated than their base learners. SHAP shares are shared among correlated markers. DCA range 0.05–0.30 pre-specified. |
 
 ---
 
-## ⚖️ Literature Claims vs. Empirical Reality
+## ⚖️ Common Assumptions vs. What the Audit Shows
 
-| Common Literature Claim | What Our Audit Revealed | Methodological Reason |
+| Common assumption | What the audit shows | Why |
 | :--- | :--- | :--- |
-| **"Novel Deep/Hybrid ANN Stacks are Superior"** | **Models are statistically equivalent ($p > 0.05$)** | Standard tests ignore dependent holdout variance. Under Nadeau-Bengio corrected tests, Logistic Regression ($97.95\%$) matches Hybrid ANN+XGB ($98.90\%$). |
-| **"Missing Data Mean-Imputation is Harmless"** | **Missingness carries massive label leakage** | Missingness is MNAR (label-correlated). A model trained *strictly on missingness indicators* achieves **$80.9\%$ accuracy (AUC $0.850$)**. |
-| **"Near-100% Accuracy is Solely an Imputation Artifact"** | **Real physiological signal remains intact** | Moving imputation strictly inside folds yields **$98.85\%$ accuracy**, proving core kidney biomarkers remain powerfully predictive. |
-| **"Models Tested Only on UCI-400 Will Collapse Externally"** | **Strong generalization on independent cohort** | On external cohort UCI #857 ($n=200$, Dhaka, Bangladesh), the model achieved **$98.00\%$ accuracy with 0 missed CKD cases**. |
+| *"Hybrid ANN stacks are superior"* | **Not demonstrated.** Differences are statistically indistinguishable. | Under Nadeau–Bengio corrected tests, Logistic Regression (97.95%) and ANN+XGB (98.90%) cannot be separated. |
+| *"Mean imputation is harmless"* | **Missingness carries label information.** | A model using only missingness flags (no lab values) reaches 80.9% accuracy against a 62.5% baseline. |
+| *"Near-100% accuracy is just an imputation artifact"* | **Not by itself.** | In-fold imputation leaves accuracy unchanged, and all 169 fully observed patients are classified correctly. Clinical signal and missingness signal cannot be separated from aggregate accuracy. |
+| *"Models fitted on UCI-400 collapse externally"* | **Not on this cohort.** | 98.0% accuracy on UCI #857, unchanged (99.0%) after removing coarse inputs. The cohort is small, single-site and similar in setting, so this is not proof of broad transfer. |
 
 ---
 
-## 🎯 Key Findings Explained
+## 🎯 Key Findings
 
 <details open>
-<summary><b>1. Architecture Equivalence: Simple Models Perform Just as Well</b></summary>
+<summary><b>1. Architecture equivalence: no model is demonstrably better</b></summary>
 <br>
 
-Under a 5-fold stratified cross-validation protocol repeated 10 times ($50$ fold evaluations) with **Nadeau-Bengio variance correction** (which accounts for non-independent test splits) and **Holm-Bonferroni multi-test adjustment**:
-- **Zero of the 21 pairwise differences** between seven models were statistically significant.
-- L2-regularized **Logistic Regression** achieved **97.95%**, which is statistically indistinguishable from the top-performing **Hybrid ANN + XGBoost** (**98.90%**, difference $0.95\text{ pp}$, corrected $p > 0.05$).
-- *Takeaway:* Published claims of architectural superiority in this benchmark are largely small-sample testing noise.
+5-fold stratified CV repeated 10 times (50 paired folds) with Nadeau–Bengio variance correction and Holm adjustment:
+
+- None of the 21 pairwise accuracy comparisons is significant (smallest raw *p* = 0.053).
+- The **Decision Tree** is the only model with credibly lower AUC: significantly worse than each of the other six (Holm-adjusted *p* = 0.036). DeLong's test on pooled out-of-fold predictions agrees (*p* < 0.05 in 10 of 10 repeats for exactly those six pairs). Because fold-models share training data, DeLong's *p*-values are anti-conservative, so the corrected per-fold test is primary.
+- Ten further published-style and class-weighted models on the same folds: only naive Bayes (91.0%) differs significantly from the hybrid. Soft voting (99.30%) and Extra Trees (99.20%) are nominally highest but not significantly different.
+- Class imbalance (1.67:1) does not drive the results: balanced accuracy is 97.3–98.8%, MCC 0.943–0.977, and class weighting changes balanced accuracy by only +0.14 to +0.22 points.
 
 </details>
 
 <details open>
-<summary><b>2. The Missingness Trap: Missing Data Carries Diagnostic Signal</b></summary>
+<summary><b>2. The missingness audit: widespread and informative</b></summary>
 <br>
 
-When comparing against the original un-imputed UCI raw file:
-- $231 / 400$ ($57.8\%$) patients had at least one missing lab value, and $166 / 400$ ($41.5\%$) records in standard benchmarks contained mean-imputed constants.
-- Missingness was **Missing Not At Random (MNAR)**: doctors were far more likely to order specific lab tests (like Albumin and Specific Gravity) for patients who appeared clinically ill.
-- A **missingness-only model** trained strictly on binary missingness indicators (without seeing any actual lab numbers) reached **80.9% accuracy (AUC 0.850)**, far above the $62.5\%$ baseline!
+We aligned the distributed CSV row by row with the raw UCI file (100% match on observed entries) to recover the true missing cells:
+
+- **808 of 5,200 cells (15.5%)** were imputed; **231 of 400 patients (57.8%)** are affected. Every column contains imputed cells (0.5% for `Htn` up to 38.0% for `Rbc`).
+- **Nine columns** have a CKD rate among imputed cells of 88–95%, against 43–59% among observed cells: `Rbc`, `Rbcc`, `Wbcc`, `Pot`, `Sod`, `Hemo`, `Su`, `Sg`, `Al`.
+- A label-free heuristic first flagged five columns (`Sod`, `Pot`, `Hemo`, `Wbcc`, `Rbcc`); 166 patients (41.5%) have an imputed value in at least one of them. The ground-truth audit shows the problem is larger.
+- Missingness flags alone: **80.9% accuracy, AUC 0.850** (all 13 flags); 72.25% accuracy, AUC 0.770 (the five original flags).
 
 </details>
 
 <details open>
-<summary><b>3. In-Fold Preprocessing: The Clinical Signal Is Still Real</b></summary>
+<summary><b>3. Does imputation explain the accuracy? Not by itself, but we cannot rule out shared signal</b></summary>
 <br>
 
-Does the model collapse if we remove this leakage?
-- When all preprocessing is moved strictly **inside each CV fold** (restoring true NaNs and performing in-fold median imputation without leakage), XGBoost still achieves **98.85% accuracy** ($p = 0.70$ vs pre-imputed).
-- Completely removing the 5 most leakage-prone features drops accuracy by only $1.67\text{ pp}$ ($97.08\%$, $p = 0.070$).
-- *Takeaway:* The model does not solely depend on the imputation shortcut; genuine kidney markers provide strong diagnostic separation.
+| Analysis (XGBoost, 50 folds) | Accuracy (%) | *p* |
+| :--- | :---: | :---: |
+| W0: pre-imputed CSV | 98.75 | 0.70 (vs W1) |
+| W1: true NaNs, in-fold median imputation | 98.85 | — |
+| W2: W1 + in-fold missingness indicators | 99.17 | 0.38 (vs W1) |
+| W3: W1 without the nine columns with >10% missing | 89.43 | <0.001 (vs W1) |
+| V1 → V4: drop the five originally flagged columns | 98.75 → 97.08 (−1.68 pp) | 0.070 |
+
+In-fold imputation does not change accuracy, and accuracy is perfect on the 169 fully observed patients. But dropping the heavily imputed columns costs about 9 points, and aggregate accuracy cannot tell us whether that information is clinical content or collection practice. A non-significant difference (*p* = 0.070) is not evidence of equivalence. Accuracy is lowest in patients with three or more missing values (specificity 76.4% for XGBoost, from only about 11 non-CKD patients).
 
 </details>
 
 <details open>
-<summary><b>4. External Generalization: Tested on Independent Patients</b></summary>
+<summary><b>4. External validation on an independent hospital cohort</b></summary>
 <br>
 
-We tested the model on a completely independent external cohort from **Dhaka, Bangladesh** (UCI #857, $n=200$, 128 CKD / 72 healthy):
-- **Accuracy**: **98.00%** (Exact 95% CI: $[95.0\%, 99.5\%]$)
-- **AUC-ROC**: **0.9985**
-- **Sensitivity (Recall)**: **100.0%** ($128 / 128$ CKD cases detected; **0 False Negatives**)
-- **Specificity**: **94.4%** ($68 / 72$ healthy subjects correctly identified; 4 False Positives)
-- *Takeaway:* Zero missed diagnoses in this external hospital cohort, though retrospective single-site caveats still apply.
+XGBoost trained on UCI-400 (12 shared features) and applied unchanged to UCI #857 (*n* = 200; 128 CKD / 72 non-CKD):
+
+| Metric | Value (95% CI) |
+| :--- | :---: |
+| Accuracy | **98.0%** (95.0–99.5, exact) |
+| AUC | 0.9985 |
+| Sensitivity | **100%** (97.2–100): 0 of 128 CKD cases missed |
+| Specificity | 94.4% (86.4–98.5): 4 false positives |
+| PPV / NPV | 97.0% (92.4–99.2) / 100% (94.7–100) |
+
+**Interpret with caution.** The cohort is small, single-site and retrospective, with undocumented sampling. Both datasets are South Asian hospital samples with similar prevalence (62.5% and 64.0%), and neither records sex. Serum creatinine, blood urea and potassium are effectively collapsed to one value in the external data (accuracy 99.0% without them). At lower prevalence the same specificity gives a much lower PPV: 48.6% at 5%, 66.7% at 10%, 81.8% at 20%.
 
 </details>
 
 ---
 
-## 📊 Comprehensive Benchmark Table
+## 📊 Benchmark Table
 
-Performance across 50 evaluations (5-fold Stratified CV $\times$ 10 Repeats):
+Repeated stratified CV (5 folds × 10 repeats). CIs are Nadeau–Bengio corrected.
 
-| Model Architecture | Accuracy (%) | Nadeau-Bengio 95% CI | AUC-ROC | F1-Score | Brier Score | Significant vs Others? |
+| Model | Accuracy (%) | 95% CI | AUC | F1 | Brier | Accuracy differs significantly from others? |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: |
-| 🥇 **Hybrid ANN + XGBoost** | **98.90%** | [97.76%, 100.00%] | 0.9995 | 0.9912 | 0.0098 | ❌ (0/6 vs others) |
-| 🥈 **Random Forest** | **98.75%** | [97.63%, 99.87%] | 0.9998 | 0.9901 | 0.0112 | ❌ (0/6 vs others) |
-| 🥉 **XGBoost** | **98.60%** | [97.35%, 99.85%] | 0.9996 | 0.9888 | 0.0097 | ❌ (0/6 vs others) |
-| 🔹 **Hybrid ANN + RF** | **98.45%** | [97.02%, 99.88%] | 0.9996 | 0.9876 | 0.0110 | ❌ (0/6 vs others) |
-| 🔹 **SVM (RBF Kernel)** | **98.35%** | [96.99%, 99.71%] | 0.9996 | 0.9867 | 0.0097 | ❌ (0/6 vs others) |
-| 🔹 **Logistic Regression** | **97.95%** | [96.51%, 99.39%] | 0.9994 | 0.9834 | 0.0133 | ❌ (0/6 vs others) |
-| 🔹 **Decision Tree** | **97.32%** | [95.74%, 98.91%] | 0.9730 | 0.9784 | 0.0268 | ❌ (Acc equiv.) |
+| Hybrid (ANN+XGBoost) | 98.90 | [97.76, 100.0] | 0.9995 | 0.9912 | 0.0098 | No |
+| Random Forest | 98.75 | [97.63, 99.87] | 0.9998 | 0.9901 | 0.0112 | No |
+| XGBoost | 98.60 | [97.35, 99.85] | 0.9996 | 0.9888 | 0.0097 | No |
+| Hybrid (ANN+RF) | 98.45 | [97.02, 99.88] | 0.9996 | 0.9876 | 0.0110 | No |
+| SVM (RBF) | 98.35 | [96.99, 99.71] | 0.9996 | 0.9867 | 0.0097 | No |
+| Logistic Regression | 97.95 | [96.51, 99.39] | 0.9994 | 0.9834 | 0.0133 | No |
+| Decision Tree | 97.33 | [95.74, 98.91] | 0.9730 | 0.9784 | 0.0268 | No (AUC is lower, *p* = 0.036) |
+
+Models are listed by nominal accuracy only; the differences are not statistically meaningful. Sensitivity, specificity, precision and NPV with exact Clopper–Pearson CIs are in the paper (Table 4).
+
+> **Why XGBoost is 98.60% here but 98.75% in the ablations.** The seven-model benchmark uses `StratifiedKFold` with seeds 42–51. The ablation, in-fold imputation and 12-feature reference analyses use a separate partition (`RepeatedStratifiedKFold`, random state 42), shared across their own variants. The difference is one of partitions, not of models.
 
 ---
 
 ## 🩺 Clinical Feature Glossary
 
-The 13 clinical biomarkers utilized in the benchmark dataset (`new_model.csv`):
+The 13 predictors in `new_model.csv`. This table is background description added for readers; it is not taken from the dataset documentation.
 
-| Feature Name | Clinical Description | Measurement / Units | Normal Clinical Reference | Pathophysiological Role in CKD |
+| Feature | Description | Units / coding | Typical reference | Relevance to CKD |
 | :--- | :--- | :--- | :--- | :--- |
-| **`Hemo`** | Hemoglobin | g/dL | 13.5–17.5 (M), 12.0–15.5 (F) | Kidneys produce erythropoietin; damage causes severe normocytic anemia. |
-| **`Sg`** | Urine Specific Gravity | Ratio | 1.010–1.025 | Loss of renal tubular concentrating capacity leads to fixed low specific gravity. |
-| **`Al`** | Urine Albumin | Categorical (0–5) | 0 (Negative) | Glomerular podocyte effacement causes high albumin filtration into urine. |
-| **`Sc`** | Serum Creatinine | mg/dL | 0.7–1.3 | Direct biomarker of declining glomerular filtration rate (GFR). |
-| **`Bu`** | Blood Urea | mg/dL | 15–45 | Uremic retention resulting from impaired nitrogenous waste clearance. |
-| **`Rbcc`** | Red Blood Cell Count | $\text{millions/mm}^3$ | 4.5–5.9 | Depressed secondary to erythropoietin deficiency. |
-| **`Wbcc`** | White Blood Cell Count | $\text{cells/mm}^3$ | 4,000–11,000 | Marker of systemic uremic inflammation and immune dysregulation. |
-| **`Sod`** | Serum Sodium | mEq/L | 135–145 | Dysregulated sodium retention and tubular handling in chronic kidney injury. |
-| **`Pot`** | Serum Potassium | mEq/L | 3.5–5.0 | Reduced nephron mass leads to dangerous hyperkalemia. |
-| **`Su`** | Urine Sugar | Categorical (0–5) | 0 (Negative) | Marker of diabetic nephropathy (leading etiology of end-stage renal disease). |
-| **`Bp`** | Blood Pressure | mmHg | 120/80 | Glomerular hypertension accelerates renal microvascular arteriosclerosis. |
-| **`Rbc`** | Red Blood Cells in Urine | Binary (0/1) | Normal (0) | Microscopic hematuria indicating active glomerular basement membrane breach. |
-| **`Htn`** | Hypertension Status | Binary (0/1) | No (0) | Primary comorbidity and driver of chronic kidney damage. |
+| **`Hemo`** | Hemoglobin | g/dL | 13.5–17.5 (M), 12.0–15.5 (F) | Reduced erythropoietin production can cause anaemia. |
+| **`Sg`** | Urine specific gravity | Ratio | 1.010–1.025 | Loss of tubular concentrating capacity lowers it. |
+| **`Al`** | Urine albumin | Ordinal 0–5 | 0 (negative) | Albuminuria reflects glomerular damage. |
+| **`Sc`** | Serum creatinine | mg/dL | 0.7–1.3 | Rises as filtration declines. |
+| **`Bu`** | Blood urea | mg/dL | 15–45 | Retained when waste clearance is impaired. |
+| **`Rbcc`** | Red blood cell count | million/mm³ | 4.5–5.9 | Often reduced alongside anaemia. |
+| **`Wbcc`** | White blood cell count | cells/mm³ | 4,000–11,000 | Non-specific marker of inflammation. |
+| **`Sod`** | Serum sodium | mEq/L | 135–145 | Sodium handling may be disturbed. |
+| **`Pot`** | Serum potassium | mEq/L | 3.5–5.0 | Hyperkalaemia can occur with reduced nephron mass. |
+| **`Su`** | Urine sugar | Ordinal 0–5 | 0 (negative) | Linked to diabetic kidney disease. |
+| **`Bp`** | Blood pressure | mmHg | about 120/80 | Hypertension is a cause and a consequence of CKD. |
+| **`Rbc`** | Red blood cells (urine) | Binary, **1 = normal**, 0 = abnormal | Normal | Abnormal findings can indicate glomerular injury. |
+| **`Htn`** | Hypertension | Binary, 1 = yes | No | Major comorbidity. |
+
+The 13-variable subset comes from the distributed CSV; we did not select it, and its curators do not document the rationale. Twelve predictors are shared with the external cohort (`Bp` is excluded because the external blood-pressure fields are not comparable).
 
 ---
 
-## 🔬 Clinical Explainability & Utility
+## 🔬 Calibration, Explainability and Clinical Utility
 
-### 1. What Drives Predictions? (SHAP Analysis)
-TreeExplainer reveals that **four key renal biomarkers account for $>82\%$ of the total diagnostic decision**:
-- **Hemoglobin (`Hemo`)** – $30.2\%$ contribution
-- **Specific Gravity (`Sg`)** – $20.2\%$ contribution
-- **Albumin (`Al`)** – $16.2\%$ contribution
-- **Serum Creatinine (`Sc`)** – $15.9\%$ contribution
+### 1. Are the probabilities calibrated?
+
+Calibration (median over the 10 repeats): XGBoost is best calibrated (ECE 0.0148, Spiegelhalter *p* = 0.283). The stacked hybrids are not better calibrated than their base learners, and all calibration slopes exceed 1 (predictions are under-confident). External XGBoost: Brier 0.0174, ECE 0.0281.
 
 <p align="center">
-  <img src="figures/shap_beeswarm.png" alt="SHAP Beeswarm Distribution" width="750">
+  <img src="figures/reliability_plots.png" alt="Reliability plots for the seven models and for XGBoost on the external cohort" width="800">
   <br>
-  <em>SHAP Beeswarm Plot: Low hemoglobin and specific gravity, combined with elevated albumin and creatinine, strongly push predictions toward CKD.</em>
+  <em>Reliability plots (pooled out-of-fold predictions, 10 quantile bins) and the external cohort (last panel).</em>
+</p>
+
+### 2. What drives the predictions? (SHAP)
+
+Hemoglobin (30.2%), specific gravity (20.2%), albumin (16.2%) and serum creatinine (15.9%) carry 82.5% of mean |SHAP|. These predictors are strongly correlated (20 pairs with |ρ| ≥ 0.5; maximum VIF 2.67), so the individual shares describe how this model distributes credit, **not each marker's separate or causal importance**.
+
+<p align="center">
+  <img src="figures/shap_beeswarm.png" alt="SHAP beeswarm plot" width="700">
+  <br>
+  <em>SHAP summary: lower hemoglobin and specific gravity, and higher creatinine, push predictions toward CKD.</em>
+</p>
+
+<p align="center">
+  <img src="figures/feature_correlation.png" alt="Spearman correlation matrix of the 12 shared features" width="600">
+  <br>
+  <em>Spearman correlation among the 12 shared features (observed values only).</em>
+</p>
+
+### 3. Is it useful in practice? (Decision curve analysis)
+
+On the external cohort, the threshold range **0.05–0.30** was pre-specified because a missed CKD case (late diagnosis) is costlier than a confirmatory test. Net benefit exceeds treat-all across that range, with bootstrap CIs of the difference excluding zero. This holds only at 64% prevalence; screening-population prevalence was not assessed, so the curve supports potential usefulness in a hospital-referral setting, not proven clinical utility.
+
+<p align="center">
+  <img src="figures/decision_curve_v2.png" alt="Decision curve analysis on the external cohort" width="650">
+  <br>
+  <em>Decision curve on the external cohort (n = 200). The shaded band is the pre-specified range 0.05–0.30.</em>
 </p>
 
 ---
 
-### 2. Is It Useful in Practice? (Decision Curve Analysis)
-Traditional accuracy does not capture the real-world trade-off between missing a sick patient vs performing unnecessary invasive biopsies. **Decision Curve Analysis (DCA)** measures net clinical benefit:
+## 🗺️ Where to Find Each Analysis
 
-<p align="center">
-  <img src="figures/decision_curve_v2.png" alt="Decision Curve Analysis" width="650">
-  <br>
-  <em>The model delivers positive clinical net benefit across the entire threshold probability range ($p_t \in [0.03, 0.64]$) compared to "treat all" or "treat none" referral strategies.</em>
-</p>
-
----
-
-### 3. Are the Probabilities Calibrated? (Reliability Curves)
-A model shouldn't just be accurate; its confidence must be trustworthy. We evaluated calibration using Expected Calibration Error (ECE) and Brier scores:
-
-<p align="center">
-  <img src="figures/reliability_plots.png" alt="Model Calibration Curves" width="750">
-  <br>
-  <em>Probability calibration curves across all models. XGBoost and SVM-RBF demonstrate the tightest alignment along the ideal $45^\circ$ calibration diagonal.</em>
-</p>
-
----
-
-## 📋 Peer-Review Traceability Matrix (Paper ID 183)
-
-This replication suite directly addresses every point raised during review:
-
-| Reviewer / Query | Specific Reviewer Comment | How It Is Addressed in Code | Artifact / Output Location |
-| :---: | :--- | :--- | :--- |
-| **Reviewer 1** | *"Preprocessing (imputation/scaling) must occur strictly inside folds to prevent leakage."* | Fully enclosed `Pipeline` performing median imputation and standard scaling solely on training folds. | Notebook Cell 27; `per_fold_accuracy.csv` |
-| **Reviewer 2** | *"Audit against original ground-truth missingness and report exact Wilson CIs."* | Restored true NaNs from UCI raw dataset; evaluated missingness-only model; calculated exact 95% Wilson intervals. | Cells 26, 39; `true_missingness_mask.csv`, `table1.csv` |
-| **Reviewer 2** | *"Demonstrate external validity on an independent cohort."* | Evaluated without retraining on UCI #857 ($n=200$, Dhaka, Bangladesh cohort) with bin-to-continuous schema mapping. | Cells 28–37; `external_uci857_aligned.csv` |
-| **Reviewer 3** | *"Include published baseline architectures and report imbalance-robust metrics."* | Added class-weighted models, balanced accuracy, Matthews Correlation Coefficient (MCC), and AUPRC. | Cells 15–16, 43; `table_all_metrics.csv` |
-| **Reviewer 3** | *"Include formal calibration curves and clinical Decision Curve Analysis (DCA)."* | Computed ECE, Brier score, Spiegelhalter $z$-test, and decision curves across clinical threshold probabilities ($p_t$). | Cells 44, 59–60; `reliability_plots.png`, `decision_curve_v2.png` |
+| Paper section | Notebook section (`SPM_RESEARCH_7.ipynb`) | Main outputs |
+| :--- | :--- | :--- |
+| Repeated CV, corrected tests, DeLong | 2. Repeated stratified CV | `results_df.csv`, `per_fold_accuracy.csv`, `oof_predictions.csv` |
+| Additional baselines, class weighting | 3. Extra baselines and class-weighted variants | Extended-models table |
+| Feature-set ablation (V1–V5) | 4. Leakage audit (heuristic) and ablation | Ablation table |
+| Ground-truth missingness, in-fold imputation | 5. Ground-truth missingness audit | `true_missingness_mask.csv`, `new_model_observed_only.csv` |
+| External validation, robustness | 6. External validation on UCI #857 | `external_uci857_aligned.csv` |
+| Exact CIs, cohort table, metrics, calibration, strata | 7. Exact CIs, cohort characteristics, metrics, calibration | Metrics, calibration and strata tables |
+| SHAP, correlations, DCA, McNemar | 9. Explainability, correlation, decision curves | `shap_*.png`, `feature_correlation.png`, `decision_curve_v2.png` |
+| Reproducibility package | 10. Reproducibility package | `repro_package.zip` |
 
 ---
 
@@ -209,97 +231,81 @@ This replication suite directly addresses every point raised during review:
 
 ```text
 Chronic-Kidney-Disease/
-│
-├── README.md                          # Interactive overview and comprehensive audit report
-├── requirements.txt                   # Exact environment packages for reproduction
-├── .gitignore                         # Build and temporary file exclusions
-├── SPM_RESEARCH_7.ipynb               # Master replication notebook (Google Colab ready)
-├── new_model.csv                      # Baseline benchmark dataset (400 x 13 features)
-│
-├── 📁 data/                           # All input data & deterministic partitions
-│   ├── new_model.csv                  # Benchmark CSV
-│   ├── new_model_input.csv            # Clean pre-imputed dataset
-│   ├── new_model_observed_only.csv    # Dataset with ground-truth NaNs restored
-│   ├── external_uci857_aligned.csv    # Aligned external validation cohort (n=200, Dhaka)
-│   ├── true_missingness_mask.csv      # Ground-truth missingness boolean mask
-│   └── cv_fold_assignments.csv        # Exact 5-fold x 10-repeat split assignments
-│
-├── 📁 results/                        # Raw tables, metrics, and out-of-fold predictions
-│   ├── results_df.csv                 # Master benchmark metrics across 7 models
-│   ├── oof_predictions.csv            # Pooled out-of-fold probability predictions
-│   ├── per_fold_accuracy.csv          # Per-fold accuracy records across 50 splits
-│   ├── table1_cohort_characteristics.csv # Baseline demographics (UCI-400 vs UCI #857)
-│   ├── table_auc_significance.csv     # DeLong pairwise AUC tests
-│   ├── table_calibration_stats.csv    # ECE, Brier score, and calibration statistics
-│   └── table_missingness_strata.csv   # Accuracy stratified by number of missing values
-│
-└── 📁 figures/                        # High-resolution publication figures
-    ├── shap_beeswarm.png              # SHAP summary distribution
-    ├── shap_bar.png                   # SHAP global feature ranking
-    ├── shap_waterfall.png             # Single-patient local explanation
-    ├── feature_correlation.png        # Spearman correlation & multicollinearity matrix
-    ├── reliability_plots.png          # Probability calibration curves
-    └── decision_curve_v2.png          # Clinical Decision Curve Analysis (DCA)
+├── README.md
+├── LICENSE                         # MIT (code)
+├── requirements.txt                # Package versions used
+├── SPM_RESEARCH_7.ipynb            # Master notebook (Google Colab ready)
+├── new_model.csv                   # Benchmark CSV (400 x 13 predictors + label)
+├── 📁 data/                        # Input data and fold assignments
+│   ├── new_model_input.csv         #   Pre-imputed training data
+│   ├── new_model_observed_only.csv #   Data with true missing values restored
+│   ├── true_missingness_mask.csv   #   Ground-truth missingness mask
+│   ├── external_uci857_aligned.csv #   Aligned external cohort (n = 200)
+│   └── cv_fold_assignments.csv     #   5-fold x 10-repeat fold membership
+├── 📁 results/                     # Result tables, out-of-fold predictions, per-fold accuracies
+└── 📁 figures/                     # SHAP, correlation, reliability, decision-curve and significance figures
 ```
 
 ---
 
-## ⚡ Quickstart: Run in 3 Minutes
+## ⚡ Reproducing the Results
 
-### Option 1: Open Directly in Google Colab
-Click the badge below to run the notebook interactively in your browser with free CPU/GPU:  
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/HarshaAppikatla/Chronic-Kidney-Disease/blob/main/SPM_RESEARCH_7.ipynb)
+**Option 1: Google Colab (recommended).** Click the Colab badge above, choose *Runtime → Run all*, and upload `new_model.csv` when asked.
 
-### Option 2: Run Locally
+**Option 2: locally.**
+
 ```bash
-# 1. Clone the repository
 git clone https://github.com/HarshaAppikatla/Chronic-Kidney-Disease.git
 cd Chronic-Kidney-Disease
-
-# 2. Create and activate a virtual environment
 python -m venv venv
-# On Windows:
-venv\Scripts\activate
-# On macOS / Linux:
-source venv/bin/activate
-
-# 3. Install dependencies
+source venv/bin/activate          # Windows: venv\Scripts\activate
 pip install -r requirements.txt
-
-# 4. Launch Jupyter Lab or Notebook
 jupyter lab SPM_RESEARCH_7.ipynb
 ```
-*Total execution time is approximately 45–60 minutes on a standard CPU.*
+
+- The full run takes about one hour on a Colab CPU. `QUICK_MODE = True` in the first code cell runs a 2-repeat smoke test; **only the full run reproduces the paper's numbers**.
+- Seeds are fixed (42–51). ANN results can differ slightly across hardware and TensorFlow versions despite this.
+- The environment used for the paper (Python 3.13, NumPy 2.1.3, pandas 2.2.3, scikit-learn 1.6.1, XGBoost 3.4.1, TensorFlow 2.20.0, SHAP 0.52.0, SciPy 1.16.3, statsmodels 0.15.0, ucimlrepo 0.0.7) is recorded in `requirements.txt`.
+- No hyperparameters are tuned; all settings are fixed in advance and listed in the paper's appendix.
 
 ---
 
-## 🏛️ Dataset Provenance & Attribution
+## 🏛️ Datasets and Attribution
 
-1. **Training Benchmark (UCI CKD #336)**:
-   - Collected from Apollo Hospitals, Tamil Nadu, India ($n=400$, 24 features).
-   - Distributed via the [UCI Machine Learning Repository (Dataset ID: 336)](https://archive.ics.uci.edu/dataset/336/chronic_kidney_disease).
-2. **External Validation Cohort (UCI #857)**:
-   - Collected from tertiary care hospitals in Dhaka, Bangladesh ($n=200$, 28 features).
-   - Distributed via the [UCI Machine Learning Repository (Dataset ID: 857)](https://archive.ics.uci.edu/dataset/857/chronic_kidney_disease) under the **Creative Commons Attribution 4.0 International (CC BY 4.0)** license.
+1. **Training benchmark: UCI Chronic Kidney Disease (ID 336).** 400 patients, 24 attributes, from Apollo Hospitals, Tamil Nadu, India. [UCI page](https://archive.ics.uci.edu/dataset/336/chronic_kidney_disease). We used the widely circulated 13-predictor, pre-imputed CSV, and recovered true missingness by aligning it with the raw UCI file.
+2. **External cohort: UCI Risk Factor Prediction of Chronic Kidney Disease (ID 857).** 200 patients, 28 attributes, collected at Enam Medical College, Savar, Dhaka, Bangladesh; released without preprocessing under CC BY 4.0. [UCI page](https://archive.ics.uci.edu/dataset/857/risk+factor+prediction+of+chronic+kidney+disease). Introductory paper: M. Islam, S. Akter, M. Hossen, S. A. Keya, S. A. Tisha and S. Hossain, *Risk Factor Prediction of Chronic Kidney Disease based on Machine Learning Algorithms*, 2020. The repository description does not document patient selection, consent or ethical approval, so we treat it as a retrospective, single-site, de-identified convenience sample. Its binned laboratory values were converted to midpoints or ordinal ranks, and its `Rbc` coding was reversed to match the training data (details in the paper).
+
+This is a secondary analysis of public, de-identified data; no new patient contact or data collection took place.
+
+**Licences.** The code is released under the MIT licence (see `LICENSE`). The processed data files are derived from the UCI datasets and are redistributed with attribution to the original sources under their CC BY 4.0 licences.
+
+---
+
+## ⚠️ Limitations
+
+- Both datasets are small, retrospective, South Asian hospital samples with 62–64% CKD prevalence; neither records sex, and no temporal or multi-site split was possible.
+- The training CSV was imputed by unknown curators; in-fold imputation was tested for XGBoost only.
+- Non-significant tests do not prove equivalence. With 50 correlated folds and ceiling-level accuracy, differences of roughly one to one and a half points cannot be excluded.
+- Hyperparameters were fixed, not tuned, and SHAP attributions are model-specific and shared among correlated variables.
 
 ---
 
 ## 📜 Citation
 
-If you use this benchmark, methodology, or code in your research, please cite:
+The paper is under revision. Until it is published, please cite the repository:
 
 ```bibtex
-@article{ckd_audit_paper183,
-  title={How Much of Reported Chronic Kidney Disease Prediction Accuracy Is Real? A Statistical Audit, Leakage Analysis, and External Validation of Hybrid Stacking on the UCI Benchmark},
-  author={Appikatla, Harsha and Contributors},
-  journal={Replication and Benchmark Suite (Paper ID 183)},
-  year={2026},
-  url={https://github.com/HarshaAppikatla/Chronic-Kidney-Disease}
+@misc{ckd_audit_icmlde2026,
+  title  = {How Much of Reported Chronic Kidney Disease Prediction Accuracy Is Real?
+            A Statistical Audit, Leakage Analysis, and External Validation of
+            Hybrid Stacking on the UCI Benchmark},
+  author = {B. V. Gokulnath and  V. V. P. S. Susanth and Appikatla, Harsha Vardhan and S. V. Anvith Raju and Koduri Somanth},
+  year   = {2026},
+  note   = {ICMLDE 2026, under revision for Procedia Computer Science},
+  url    = {https://github.com/HarshaAppikatla/Chronic-Kidney-Disease}
 }
 ```
 
----
-
 <div align="center">
-  <sub>Maintained for Paper ID 183 Review & Scientific Reproducibility • Licensed under the MIT License</sub>
+  <sub>VIT-AP University, SCOPE • Code licensed under MIT • Data under the original UCI CC BY 4.0 licences</sub>
 </div>
