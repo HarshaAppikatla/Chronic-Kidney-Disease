@@ -234,7 +234,7 @@ Chronic-Kidney-Disease/
 ├── README.md
 ├── LICENSE                         # MIT (code)
 ├── requirements.txt                # Package versions used
-├── SPM_RESEARCH_7.ipynb            # Master notebook (Google Colab ready)
+├── SPM_RESEARCH_7 (1).ipynb           # Master notebook (Google Colab ready)
 ├── new_model.csv                   # Benchmark CSV (400 x 13 predictors + label)
 ├── 📁 data/                        # Input data and fold assignments
 │   ├── new_model_input.csv         #   Pre-imputed training data
